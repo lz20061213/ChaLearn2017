@@ -1,0 +1,195 @@
+%要运行该模板，LaTex需要安装CJK库以支持汉字.
+
+%字体大小为12像素，文档类型为article
+
+%如果你要写论文，就用report代替article
+
+%所有LaTex文档开头必须使用这句话
+
+\documentclass[a4paper, 12pt]{article}
+
+%使用支持汉字的CJK包
+
+\usepackage{CJK}  %开始CJK环境,只有在这句话之后,你才能使用汉字 另外,如果在Linux下,请将文件的编码格式设置成GBK 否则会显示乱码
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{indentfirst}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\setlist[enumerate,1]{label=(\arabic*).,font=\textup,leftmargin=15mm,labelsep=1.5mm,topsep=0mm,itemsep=0.5mm}
+\usepackage{color,xcolor}
+\usepackage[colorlinks=red,linkcolor=black,hyperindex,CJKbookmarks]{hyperref}
+
+%%%%%% 设置字号 %%%%%%
+\newcommand{\chuhao}{\fontsize{42pt}{\baselineskip}\selectfont}
+\newcommand{\xiaochuhao}{\fontsize{36pt}{\baselineskip}\selectfont}
+\newcommand{\yihao}{\fontsize{28pt}{\baselineskip}\selectfont}
+\newcommand{\erhao}{\fontsize{21pt}{\baselineskip}\selectfont}
+\newcommand{\xiaoerhao}{\fontsize{18pt}{\baselineskip}\selectfont}
+\newcommand{\sanhao}{\fontsize{15.75pt}{\baselineskip}\selectfont}
+\newcommand{\sihao}{\fontsize{14pt}{\baselineskip}\selectfont}
+\newcommand{\xiaosihao}{\fontsize{12pt}{\baselineskip}\selectfont}
+\newcommand{\wuhao}{\fontsize{10.5pt}{\baselineskip}\selectfont}
+\newcommand{\xiaowuhao}{\fontsize{9pt}{\baselineskip}\selectfont}
+\newcommand{\liuhao}{\fontsize{7.875pt}{\baselineskip}\selectfont}
+\newcommand{\qihao}{\fontsize{5.25pt}{\baselineskip}\selectfont}
+
+%%%% 设置 section 属性 %%%%
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+{-1.5ex \@plus -.5ex \@minus -.2ex}%
+{.5ex \@plus .1ex}%
+{\normalfont\sihao\CJKfamily{hei}}}
+\makeatother
+
+%%%% 设置 subsection 属性 %%%%
+\makeatletter
+\renewcommand\subsection{\@startsection{subsection}{1}{\z@}%
+{-1.25ex \@plus -.5ex \@minus -.2ex}%
+{.4ex \@plus .1ex}%
+{\normalfont\xiaosihao\CJKfamily{hei}}}
+\makeatother
+
+%%%% 设置 subsubsection 属性 %%%%
+\makeatletter
+\renewcommand\subsubsection{\@startsection{subsubsection}{1}{\z@}%
+{-1ex \@plus -.5ex \@minus -.2ex}%
+{.3ex \@plus .1ex}%
+{\normalfont\xiaosihao\CJKfamily{hei}}}
+\makeatother
+
+%%%% 段落首行缩进两个字 %%%%
+\makeatletter
+\let\@afterindentfalse\@afterindenttrue
+\@afterindenttrue
+\makeatother
+\setlength{\parindent}{2em}  %中文缩进两个汉字位
+
+%%%% 下面的命令重定义页面边距，使其符合中文刊物习惯 %%%%
+\addtolength{\topmargin}{-54pt}
+\setlength{\oddsidemargin}{0.63cm}  % 3.17cm - 1 inch
+\setlength{\evensidemargin}{\oddsidemargin}
+\setlength{\textwidth}{14.66cm}
+\setlength{\textheight}{24.00cm}    % 24.62
+
+%%%% 下面的命令设置行间距与段落间距 %%%%
+\linespread{1.2}
+% \setlength{\parskip}{1ex}
+% \setlength{\parskip}{0.5\baselineskip}
+
+
+%这是文章的标题
+
+\title{Detection-pipeline}
+
+%这是文章的作者
+
+\author{Zhuang Liu}
+
+%这是文章的时间
+
+%如果没有这行将显示当前时间
+
+%如果不想显示时间则使用 \date{}
+
+%\date{}
+
+%以上部分叫做"导言区",下面才开始写正文
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents{}
+\newpage
+
+\section{\textbf{An introduction to the method}}
+
+We use Faster R-CNN based method to detect the hand in the video. The method is called \emph{two-stream Faster R-CNN}. Figure 1 shows the hand detection pipeline of two-stream Faster R-CNN.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1.0\textwidth]{imgs/Framework-English.jpg}
+  \caption{The detection pipeline of two-stream Faster R-CNN}
+\end{figure}
+
+\section{\textbf{Detection procedure}}
+
+This section will show the detection procedure of our method, which include `Pre-requirement', `Training' and `Detection'.
+
+\subsection{Pre-requirement}
+
+\begin{enumerate}
+\item Install Faster R-CNN from \\ \centerline{\url{https://github.com/rbgirshick/py-faster-rcnn}}
+\item Modify files to support two-stream Faster R-CNN. (This part will show in \textbf{Details} section)
+\end{enumerate}
+
+\subsection{Training}
+
+\begin{enumerate}
+\item We use VGG model and the end2end training strategy mentioned in Faster R-CNN to train our hand detection model. Since our goal is just to detect hand in each frame, we change the network configuration files to match two classes. (See .prototxt files in \emph{models/pascal\_voc/VGG16/faster\_rcnn\_end\\2end/rgbd\_streams})
+\item We use about 50,000 labeled frames from isolated RGB videos to prepare the data according to the VOC2007 format.
+\item Data per-processing. To use the two-stream Faster R-CNN, we need to align the depth image to the RGB space first. (See project \emph{CalibrationVideoDepth}, and this part will show in \textbf{Details} section)
+\item Train the model. The final model we get is: \\ \centerline{vgg16\_faster\_rcnn\_rgbd\_streams.caffemodel}
+\end{enumerate}
+
+\subsection{Detection}
+
+\begin{enumerate}
+\item Data per-processing. For each depth video, we should align its frames to the corresponding rgb space.
+\item Use the vgg16\_faster\_rcnn\_rgbd\_streams.caffemodel to detect hand in rgb video, save the detection result in txt file. \\
+    {\color{green}{For example:}} \\
+    For detecting the hand in M\_00001.avi, we use M\_00001.avi and the aligned K\_00001.avi as input, then we get the result file which is named Label\_M\_00001.txt. In the result file, each row is in the form of XXXX XXX XXX XXX XXX ..., first XXXX means the frame number of the video, the followed XXX XXX XXX XXX (tlx, tly, brx, bry) means a candidate area of hand.
+\item Since we first aligned the depth video to rgb space, the label can also used in the aligned depth video to get depth feature.
+\end{enumerate}
+
+\section{\textbf{Details}}
+
+\subsection{Pre-step: align depth video}
+
+We use camera calibration method to align the depth video to its corressponding rgb space. The whole project is in \emph{Detection/CalibrationVideoDepth}. The project will create an executable file (.exe) in windows operating system. There is a sample in \emph{Detection/CalibrationVideoDepth/sample}, just run the CalibrationVideoDepth.exe file. Result will be saved in \emph{Detection/CalibrationVideoDepth\\/sample/CalibrationDepth}.
+
+Since this progress will take a lot of time. We have already uploaded the aligned depth video in Baidu Netdisk. The url is: \\
+\url{}
+
+\subsection{Detection}
+
+\begin{enumerate}
+\item Install Faster R-CNN from \\ \centerline{\url{https://github.com/rbgirshick/py-faster-rcnn}}
+    (Suppose the path is \emph{XX/py-faster-rcnn}) \\
+    Make sure run the \emph{./tools/demo.py} successfully. \\
+    Make sure you have a 12G memory GPU (for run two-stream Faster R-CNN model).
+\item Copy the folders in \emph{Detection/py-faster-rcnn-rgbd-streams} to your faster-rcnn path (which is \emph{XX/py-faster-rcnn/} mentioned above). Replace the file if it already exists.
+    \begin{enumerate}
+        \item rename your install `py-faster-rcnn' to `py-faster-rcnn-rgbd-streams'
+        \item copy \emph{Detection/py-faster-rcnn-rgbd-streams} to your faster-rcnn installed path (which is \emph{XX} mentioned above). Replace the file if it already exists.
+    \end{enumerate}
+\item In \emph{XX/py-faster-rcnn-rgbd-streams/tools/} there are some .py files, which means:
+    \begin{enumerate}
+        \item chalearn\_iso\_rgb.py \\
+            Use two-stream model to detect hand in isolated rgb video. \\
+            {\color{green}{Usage:}} \\
+            There is a prepared video pair in your \emph{XX/py-faster-rcnn-rgbd-strea-ms/ChaLearn2017/sample} path. \\
+            \$$\sim$: cd XX/py-faster-rcnn-rgbd-streams \\
+            \$$\sim$/XX/py-faster-rcnn-rgbd-streams: python tools/demo\_for\_chalea-rn\_rgb\_show.py \\
+            The detection result will be saved in \emph{XX/py-faster-rcnn-rgbd-stream-s/ChaLearn2017/sample}.
+        \item demo\_for\_chalearn\_rgb\_show.py\\
+            A demo to show the result for using the two-stream model to detect hand in rgb video. This script is used to detect hand for a batch videos, as mentioned before (in the pre-step, section 3.1), we have already aligned the depth video to rgb space. Since this detection process will take a lot of time, we suggest to use many GPU to run the script.\\
+            {\color{green}{Usage:}} \\
+            \$$\sim$: cd XX/py-faster-rcnn-rgbd-streams \\
+            \$$\sim$/XX/py-faster-rcnn-rgbd-streams: python tools/chalearn\_iso\_rgb\\.py -{-}gpu 0 -{-}path ../ChaLearn2007/IsoGD/ -{-}dataset IsoPhase\_1/tr-ain -{-}begin 1 -{-}end 1 \\
+            {\color{orange}{-{-}path:}} set the root path of IsoGD \\
+		    {\color{orange}{-{-}dataset:}} set the dataset (train/valid/test) of IsoGD \\
+		    {\color{orange}{-{-}begin:}} begin subfolder (001/002/...) of the dataset \\
+	        {\color{orange}{-{-}end:}} end subfolder (001/002/...) of the dataset \\
+            The result will be saved in the path of \emph{../ChaLearn2017/IsoGD/Dete-ctionLabel}
+    \end{enumerate}
+\item After using \emph{py-faster-rcnn-rgbd-streams} to detect hands in the videos, we can finally get the rgb results of each video. \\
+    {\color{green}{For example:}} M\_00001.avi $\longrightarrow$ Label\_M\_00001.txt
+\end{enumerate}
+
+
+\end{document}
