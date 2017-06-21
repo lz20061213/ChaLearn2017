@@ -1,8 +1,0 @@
-\contentsline {section}{\numberline {1}\textbf {An introduction to the method}}{2}{section.1}
-\contentsline {section}{\numberline {2}\textbf {Detection procedure}}{2}{section.2}
-\contentsline {subsection}{\numberline {2.1}Pre-requirement}{2}{subsection.2.1}
-\contentsline {subsection}{\numberline {2.2}Training}{2}{subsection.2.2}
-\contentsline {subsection}{\numberline {2.3}Detection}{3}{subsection.2.3}
-\contentsline {section}{\numberline {3}\textbf {Details}}{3}{section.3}
-\contentsline {subsection}{\numberline {3.1}Pre-step: align depth video}{3}{subsection.3.1}
-\contentsline {subsection}{\numberline {3.2}Detection}{4}{subsection.3.2}
